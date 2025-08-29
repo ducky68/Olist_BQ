@@ -8,7 +8,7 @@ WITH duplicate_stats AS (
     COUNT(*) as total_records,
     SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) as records_with_duplicates,
     ROUND(SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as duplicate_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_customers`
+  FROM `project-olist-470307.dbt_olist_stg.stg_customers`
   
   UNION ALL
   
@@ -18,7 +18,7 @@ WITH duplicate_stats AS (
     COUNT(*) as total_records,
     SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) as records_with_duplicates,
     ROUND(SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as duplicate_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_geolocation`
+  FROM `project-olist-470307.dbt_olist_stg.stg_geolocation`
   
   UNION ALL
   
@@ -28,7 +28,7 @@ WITH duplicate_stats AS (
     COUNT(*) as total_records,
     SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) as records_with_duplicates,
     ROUND(SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as duplicate_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_items`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_items`
   
   UNION ALL
   
@@ -38,7 +38,7 @@ WITH duplicate_stats AS (
     COUNT(*) as total_records,
     SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) as records_with_duplicates,
     ROUND(SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as duplicate_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_payments`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_payments`
   
   UNION ALL
   
@@ -48,7 +48,7 @@ WITH duplicate_stats AS (
     COUNT(*) as total_records,
     SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) as records_with_duplicates,
     ROUND(SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as duplicate_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_reviews`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_reviews`
   
   UNION ALL
   
@@ -58,7 +58,7 @@ WITH duplicate_stats AS (
     COUNT(*) as total_records,
     SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) as records_with_duplicates,
     ROUND(SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as duplicate_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_orders`
+  FROM `project-olist-470307.dbt_olist_stg.stg_orders`
   
   UNION ALL
   
@@ -68,7 +68,7 @@ WITH duplicate_stats AS (
     COUNT(*) as total_records,
     SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) as records_with_duplicates,
     ROUND(SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as duplicate_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_product_category_name_translation`
+  FROM `project-olist-470307.dbt_olist_stg.stg_product_category_name_translation`
   
   UNION ALL
   
@@ -78,7 +78,7 @@ WITH duplicate_stats AS (
     COUNT(*) as total_records,
     SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) as records_with_duplicates,
     ROUND(SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as duplicate_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_products`
+  FROM `project-olist-470307.dbt_olist_stg.stg_products`
   
   UNION ALL
   
@@ -88,7 +88,7 @@ WITH duplicate_stats AS (
     COUNT(*) as total_records,
     SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) as records_with_duplicates,
     ROUND(SUM(CASE WHEN had_duplicates THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as duplicate_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_sellers`
+  FROM `project-olist-470307.dbt_olist_stg.stg_sellers`
 )
 
 SELECT 

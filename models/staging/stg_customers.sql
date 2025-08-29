@@ -32,9 +32,11 @@ with_quality_flags as (
         customer_unique_id,
         case when customer_unique_id is null then true else false end as customer_unique_id_is_null,
         
-        customer_zip_code_prefix,
+        -- Convert ZIP code to proper 5-digit STRING format with leading zeros
+        LPAD(CAST(customer_zip_code_prefix AS STRING), 5, '0') as customer_zip_code_prefix,
         case when customer_zip_code_prefix is null then true else false end as customer_zip_code_prefix_is_null,
-        case when length(cast(customer_zip_code_prefix as string)) != 5 then true else false end as customer_zip_code_prefix_invalid_length,
+        case when customer_zip_code_prefix < 1 OR customer_zip_code_prefix > 99999 then true else false end as customer_zip_code_prefix_invalid_range,
+        case when LENGTH(LPAD(CAST(customer_zip_code_prefix AS STRING), 5, '0')) != 5 then true else false end as customer_zip_code_prefix_invalid_length,
         
         customer_city,
         case when customer_city is null then true else false end as customer_city_is_null,

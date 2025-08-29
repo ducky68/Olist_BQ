@@ -10,7 +10,7 @@ WITH null_checks AS (
     SUM(CASE WHEN customer_id IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN customer_id IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_customers`
+  FROM `project-olist-470307.dbt_olist_stg.stg_customers`
   
   UNION ALL
   
@@ -20,7 +20,7 @@ WITH null_checks AS (
     SUM(CASE WHEN customer_unique_id IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN customer_unique_id IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_customers`
+  FROM `project-olist-470307.dbt_olist_stg.stg_customers`
   
   UNION ALL
   
@@ -30,7 +30,7 @@ WITH null_checks AS (
     SUM(CASE WHEN customer_zip_code_prefix IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN customer_zip_code_prefix IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_customers`
+  FROM `project-olist-470307.dbt_olist_stg.stg_customers`
   
   UNION ALL
   
@@ -40,7 +40,7 @@ WITH null_checks AS (
     SUM(CASE WHEN customer_city IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN customer_city IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_customers`
+  FROM `project-olist-470307.dbt_olist_stg.stg_customers`
   
   UNION ALL
   
@@ -50,7 +50,7 @@ WITH null_checks AS (
     SUM(CASE WHEN customer_state IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN customer_state IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_customers`
+  FROM `project-olist-470307.dbt_olist_stg.stg_customers`
 
   UNION ALL
 
@@ -61,7 +61,7 @@ WITH null_checks AS (
     SUM(CASE WHEN geolocation_zip_code_prefix IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN geolocation_zip_code_prefix IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_geolocation`
+  FROM `project-olist-470307.dbt_olist_stg.stg_geolocation`
   
   UNION ALL
   
@@ -71,7 +71,7 @@ WITH null_checks AS (
     SUM(CASE WHEN geolocation_lat IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN geolocation_lat IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_geolocation`
+  FROM `project-olist-470307.dbt_olist_stg.stg_geolocation`
   
   UNION ALL
   
@@ -81,7 +81,7 @@ WITH null_checks AS (
     SUM(CASE WHEN geolocation_lng IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN geolocation_lng IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_geolocation`
+  FROM `project-olist-470307.dbt_olist_stg.stg_geolocation`
   
   UNION ALL
   
@@ -91,7 +91,7 @@ WITH null_checks AS (
     SUM(CASE WHEN geolocation_city IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN geolocation_city IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_geolocation`
+  FROM `project-olist-470307.dbt_olist_stg.stg_geolocation`
   
   UNION ALL
   
@@ -101,7 +101,7 @@ WITH null_checks AS (
     SUM(CASE WHEN geolocation_state IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN geolocation_state IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_geolocation`
+  FROM `project-olist-470307.dbt_olist_stg.stg_geolocation`
 
   UNION ALL
 
@@ -112,7 +112,7 @@ WITH null_checks AS (
     SUM(CASE WHEN order_id IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN order_id IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_items`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_items`
   
   UNION ALL
   
@@ -122,7 +122,7 @@ WITH null_checks AS (
     SUM(CASE WHEN order_item_id IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN order_item_id IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_items`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_items`
   
   UNION ALL
   
@@ -132,7 +132,7 @@ WITH null_checks AS (
     SUM(CASE WHEN product_id IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN product_id IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_items`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_items`
   
   UNION ALL
   
@@ -142,7 +142,7 @@ WITH null_checks AS (
     SUM(CASE WHEN seller_id IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN seller_id IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_items`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_items`
   
   UNION ALL
   
@@ -152,7 +152,7 @@ WITH null_checks AS (
     SUM(CASE WHEN shipping_limit_date IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN shipping_limit_date IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_items`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_items`
   
   UNION ALL
   
@@ -162,7 +162,7 @@ WITH null_checks AS (
     SUM(CASE WHEN price IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN price IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_items`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_items`
   
   UNION ALL
   
@@ -172,7 +172,7 @@ WITH null_checks AS (
     SUM(CASE WHEN freight_value IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN freight_value IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_items`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_items`
 
   UNION ALL
 
@@ -183,7 +183,7 @@ WITH null_checks AS (
     SUM(CASE WHEN order_id IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN order_id IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_payments`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_payments`
   
   UNION ALL
   
@@ -193,7 +193,7 @@ WITH null_checks AS (
     SUM(CASE WHEN payment_sequential IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN payment_sequential IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_payments`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_payments`
   
   UNION ALL
   
@@ -203,7 +203,7 @@ WITH null_checks AS (
     SUM(CASE WHEN payment_type IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN payment_type IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_payments`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_payments`
   
   UNION ALL
   
@@ -213,7 +213,7 @@ WITH null_checks AS (
     SUM(CASE WHEN payment_installments IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN payment_installments IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_payments`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_payments`
   
   UNION ALL
   
@@ -223,7 +223,7 @@ WITH null_checks AS (
     SUM(CASE WHEN payment_value IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN payment_value IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_payments`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_payments`
 
   UNION ALL
 
@@ -234,7 +234,7 @@ WITH null_checks AS (
     SUM(CASE WHEN review_id IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN review_id IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_reviews`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_reviews`
   
   UNION ALL
   
@@ -244,7 +244,7 @@ WITH null_checks AS (
     SUM(CASE WHEN order_id IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN order_id IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_reviews`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_reviews`
   
   UNION ALL
   
@@ -254,7 +254,7 @@ WITH null_checks AS (
     SUM(CASE WHEN review_score IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN review_score IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_reviews`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_reviews`
   
   UNION ALL
   
@@ -264,7 +264,7 @@ WITH null_checks AS (
     SUM(CASE WHEN review_comment_title IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN review_comment_title IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_reviews`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_reviews`
   
   UNION ALL
   
@@ -274,7 +274,7 @@ WITH null_checks AS (
     SUM(CASE WHEN review_comment_message IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN review_comment_message IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_reviews`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_reviews`
   
   UNION ALL
   
@@ -284,7 +284,7 @@ WITH null_checks AS (
     SUM(CASE WHEN review_creation_date IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN review_creation_date IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_reviews`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_reviews`
   
   UNION ALL
   
@@ -294,7 +294,7 @@ WITH null_checks AS (
     SUM(CASE WHEN review_answer_timestamp IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN review_answer_timestamp IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_order_reviews`
+  FROM `project-olist-470307.dbt_olist_stg.stg_order_reviews`
 
   UNION ALL
 
@@ -305,7 +305,7 @@ WITH null_checks AS (
     SUM(CASE WHEN order_id IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN order_id IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_orders`
+  FROM `project-olist-470307.dbt_olist_stg.stg_orders`
   
   UNION ALL
   
@@ -315,7 +315,7 @@ WITH null_checks AS (
     SUM(CASE WHEN customer_id IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN customer_id IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_orders`
+  FROM `project-olist-470307.dbt_olist_stg.stg_orders`
   
   UNION ALL
   
@@ -325,7 +325,7 @@ WITH null_checks AS (
     SUM(CASE WHEN order_status IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN order_status IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_orders`
+  FROM `project-olist-470307.dbt_olist_stg.stg_orders`
   
   UNION ALL
   
@@ -335,7 +335,7 @@ WITH null_checks AS (
     SUM(CASE WHEN order_purchase_timestamp IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN order_purchase_timestamp IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_orders`
+  FROM `project-olist-470307.dbt_olist_stg.stg_orders`
   
   UNION ALL
   
@@ -345,7 +345,7 @@ WITH null_checks AS (
     SUM(CASE WHEN order_approved_at IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN order_approved_at IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_orders`
+  FROM `project-olist-470307.dbt_olist_stg.stg_orders`
   
   UNION ALL
   
@@ -355,7 +355,7 @@ WITH null_checks AS (
     SUM(CASE WHEN order_delivered_carrier_date IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN order_delivered_carrier_date IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_orders`
+  FROM `project-olist-470307.dbt_olist_stg.stg_orders`
   
   UNION ALL
   
@@ -365,7 +365,7 @@ WITH null_checks AS (
     SUM(CASE WHEN order_delivered_customer_date IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN order_delivered_customer_date IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_orders`
+  FROM `project-olist-470307.dbt_olist_stg.stg_orders`
   
   UNION ALL
   
@@ -375,7 +375,7 @@ WITH null_checks AS (
     SUM(CASE WHEN order_estimated_delivery_date IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN order_estimated_delivery_date IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_orders`
+  FROM `project-olist-470307.dbt_olist_stg.stg_orders`
 
   UNION ALL
 
@@ -386,7 +386,7 @@ WITH null_checks AS (
     SUM(CASE WHEN product_category_name IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN product_category_name IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_product_category_name_translation`
+  FROM `project-olist-470307.dbt_olist_stg.stg_product_category_name_translation`
   
   UNION ALL
   
@@ -396,7 +396,7 @@ WITH null_checks AS (
     SUM(CASE WHEN product_category_name_english IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN product_category_name_english IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_product_category_name_translation`
+  FROM `project-olist-470307.dbt_olist_stg.stg_product_category_name_translation`
 
   UNION ALL
 
@@ -407,7 +407,7 @@ WITH null_checks AS (
     SUM(CASE WHEN product_id IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN product_id IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_products`
+  FROM `project-olist-470307.dbt_olist_stg.stg_products`
   
   UNION ALL
   
@@ -417,7 +417,7 @@ WITH null_checks AS (
     SUM(CASE WHEN product_category_name IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN product_category_name IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_products`
+  FROM `project-olist-470307.dbt_olist_stg.stg_products`
   
   UNION ALL
   
@@ -427,7 +427,7 @@ WITH null_checks AS (
     SUM(CASE WHEN product_name_length IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN product_name_length IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_products`
+  FROM `project-olist-470307.dbt_olist_stg.stg_products`
   
   UNION ALL
   
@@ -437,7 +437,7 @@ WITH null_checks AS (
     SUM(CASE WHEN product_description_length IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN product_description_length IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_products`
+  FROM `project-olist-470307.dbt_olist_stg.stg_products`
   
   UNION ALL
   
@@ -447,7 +447,7 @@ WITH null_checks AS (
     SUM(CASE WHEN product_photos_qty IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN product_photos_qty IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_products`
+  FROM `project-olist-470307.dbt_olist_stg.stg_products`
   
   UNION ALL
   
@@ -457,7 +457,7 @@ WITH null_checks AS (
     SUM(CASE WHEN product_weight_g IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN product_weight_g IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_products`
+  FROM `project-olist-470307.dbt_olist_stg.stg_products`
   
   UNION ALL
   
@@ -467,7 +467,7 @@ WITH null_checks AS (
     SUM(CASE WHEN product_length_cm IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN product_length_cm IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_products`
+  FROM `project-olist-470307.dbt_olist_stg.stg_products`
   
   UNION ALL
   
@@ -477,7 +477,7 @@ WITH null_checks AS (
     SUM(CASE WHEN product_height_cm IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN product_height_cm IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_products`
+  FROM `project-olist-470307.dbt_olist_stg.stg_products`
   
   UNION ALL
   
@@ -487,7 +487,7 @@ WITH null_checks AS (
     SUM(CASE WHEN product_width_cm IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN product_width_cm IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_products`
+  FROM `project-olist-470307.dbt_olist_stg.stg_products`
 
   UNION ALL
 
@@ -498,7 +498,7 @@ WITH null_checks AS (
     SUM(CASE WHEN seller_id IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN seller_id IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_sellers`
+  FROM `project-olist-470307.dbt_olist_stg.stg_sellers`
   
   UNION ALL
   
@@ -508,7 +508,7 @@ WITH null_checks AS (
     SUM(CASE WHEN seller_zip_code_prefix IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN seller_zip_code_prefix IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_sellers`
+  FROM `project-olist-470307.dbt_olist_stg.stg_sellers`
   
   UNION ALL
   
@@ -518,7 +518,7 @@ WITH null_checks AS (
     SUM(CASE WHEN seller_city IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN seller_city IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_sellers`
+  FROM `project-olist-470307.dbt_olist_stg.stg_sellers`
   
   UNION ALL
   
@@ -528,7 +528,7 @@ WITH null_checks AS (
     SUM(CASE WHEN seller_state IS NULL THEN 1 ELSE 0 END) as null_count,
     COUNT(*) as total_count,
     ROUND(SUM(CASE WHEN seller_state IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) as null_percentage
-  FROM `project-olist-470307.dbt_olist_olist_stg.stg_sellers`
+  FROM `project-olist-470307.dbt_olist_stg.stg_sellers`
 )
 
 SELECT 
