@@ -1,0 +1,138 @@
+Table fact_order_items {
+  order_item_sk bigint [pk]
+  order_id string [not null]
+  order_item_id int [not null]
+  order_sk bigint [not null]
+  customer_sk bigint [not null]
+  product_sk bigint [not null]
+  seller_sk bigint [not null]
+  payment_sk bigint [not null]
+  review_sk bigint
+  order_date_sk int [not null]
+  shipping_limit_date_sk int
+  customer_geography_sk bigint [not null]
+  seller_geography_sk bigint [not null]
+  price float [not null]
+  freight_value float [not null]
+  payment_value float [not null]
+  payment_installments int
+  review_score int
+  indexes {
+    (order_date_sk)
+    (customer_sk, seller_sk, product_sk)
+  }
+}
+
+Table dim_date {
+  date_sk int [pk, not null]
+  date_value date [not null]
+  year bigint
+  quarter bigint
+  month bigint
+  day_of_month bigint
+  day_of_week bigint
+  is_weekend boolean
+  indexes {
+    (year, month)
+  }
+}
+
+Table dim_customer {
+  customer_sk bigint [pk, not null]
+  customer_id string [not null]
+  customer_unique_id string
+  customer_zip_code_prefix string
+  customer_city string
+  customer_state string
+  indexes {
+    (customer_state)
+  }
+}
+
+Table dim_geolocation {
+  geolocation_sk bigint [pk, not null]
+  geolocation_zip_code_prefix string [not null]
+  geolocation_lat float
+  geolocation_lng float
+  geolocation_city string
+  geolocation_state string
+  indexes {
+    (geolocation_state)
+  }
+}
+
+Table dim_product {
+  product_sk bigint [pk, not null]
+  product_id string [not null]
+  product_category_name string
+  product_name_length int
+  product_description_length int
+  product_photos_qty int
+  product_weight_g int
+  product_length_cm int
+  product_height_cm int
+  product_width_cm int
+  product_category_name_english string
+  indexes {
+    (product_category_name_english)
+  }
+}
+
+Table dim_seller {
+  seller_sk bigint [pk, not null]
+  seller_id string [not null]
+  seller_zip_code_prefix string
+  seller_city string
+  seller_state string
+  indexes {
+    (seller_state)
+  }
+}
+
+Table dim_payment {
+  payment_sk bigint [pk, not null]
+  order_id string [not null]
+  payment_sequential int
+  payment_type string
+  indexes {
+    (payment_type)
+  }
+}
+
+Table dim_order_reviews {
+  review_sk bigint [pk, not null]
+  review_id string
+  order_id string
+  review_comment_title string
+  review_comment_message string
+  review_creation_date timestamp
+  review_answer_timestamp timestamp
+  indexes {
+    (order_id, review_creation_date)
+  }
+}
+
+Table dim_orders {
+  order_sk bigint [pk, not null]
+  order_id string [not null]
+  order_status string
+  order_purchase_timestamp timestamp
+  order_approved_at timestamp
+  order_delivered_carrier_date timestamp
+  order_delivered_customer_date timestamp
+  order_estimated_delivery_date timestamp
+  indexes {
+    (order_status)
+  }
+}
+
+Ref: fact_order_items.customer_sk > dim_customer.customer_sk
+Ref: fact_order_items.product_sk > dim_product.product_sk
+Ref: fact_order_items.seller_sk > dim_seller.seller_sk
+Ref: fact_order_items.payment_sk > dim_payment.payment_sk
+Ref: fact_order_items.review_sk > dim_order_reviews.review_sk
+Ref: fact_order_items.order_sk > dim_orders.order_sk
+Ref: fact_order_items.order_date_sk > dim_date.date_sk
+Ref: fact_order_items.shipping_limit_date_sk > dim_date.date_sk
+Ref: fact_order_items.customer_geography_sk > dim_geolocation.geolocation_sk
+Ref: fact_order_items.seller_geography_sk > dim_geolocation.geolocation_sk

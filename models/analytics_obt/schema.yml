@@ -1,0 +1,38 @@
+version: 2
+
+# =============================================================================
+# ANALYTICS OBT (One Big Table) LAYER
+# =============================================================================
+# This folder will contain denormalized analytical tables for specific business use cases
+# Each OBT combines multiple dimensions with facts for optimized analytical queries
+
+# Uncomment and modify the models section when you create OBT models:
+# models:
+#   - name: obt_customer_order_summary
+#     description: "Denormalized customer order analytics table"
+#     columns:
+#       - name: customer_id
+#         description: "Customer identifier"
+#         tests:
+#           - not_null
+#           - unique
+#   
+#   - name: obt_product_performance
+#     description: "Product sales and review performance analytics"
+#   
+#   - name: obt_seller_analytics
+#     description: "Seller performance and geography analytics"
+#   
+#   - name: obt_payment_behavior
+#     description: "Customer payment behavior and preferences"
+
+# =============================================================================
+# ANALYTICS LAYER TESTS
+# =============================================================================
+# Uncomment and modify the tests section when you create OBT models:
+# tests:
+#   - name: obt_data_freshness_check
+#     description: "Verify OBT tables are updated within expected timeframes"
+#   
+#   - name: obt_aggregation_accuracy
+#     description: "Verify aggregations match source fact table totals"
