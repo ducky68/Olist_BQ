@@ -21,6 +21,8 @@ Complete end-to-end analytics and visualization platform for Brazilian e-commerc
 - **6 Comprehensive Analytics Modules**: Revenue, Customer, Seller, Payment, Geographic, Delivery
 - **Interactive Streamlit Dashboard**: Real-time insights and visualizations
 - **Production-Ready**: Full data quality testing, documentation, and CI/CD patterns
+- **⭐ Business-Friendly Architecture**: Natural keys used throughout analytics layer for business user accessibility
+- **⭐ Optimized Performance**: Surrogate keys used internally for efficient warehouse joins
 
 ### Project Structure
 
@@ -254,6 +256,51 @@ models:
 - **Warehouse tests**: Dimensional model integrity
 - **Analytics tests**: Business rule validation
 
+### ⭐ Key Architectural Decision: Natural vs Surrogate Keys
+
+**Critical Design Pattern Implemented**:
+
+#### **Problem Solved**
+Traditional data warehouse patterns often expose surrogate keys to business users, making analytics tables difficult to understand and integrate with external applications.
+
+#### **Our Solution**
+- **Warehouse Layer**: Uses surrogate keys for optimal join performance
+- **Analytics OBT Layer**: Uses natural business keys for user accessibility
+- **Streamlit Dashboard**: Queries using natural keys for business logic
+
+#### **Implementation Details**
+
+**✅ Correct Pattern Applied**:
+```sql
+-- Analytics layer joins efficiently using surrogate keys
+FROM {{ ref('fact_order_items') }} f
+INNER JOIN {{ ref('dim_customer') }} c ON f.customer_sk = c.customer_sk
+
+-- But exposes only natural keys to business users
+SELECT 
+    c.customer_id,      -- Natural key (business-friendly)
+    c.customer_city,
+    c.customer_state,
+    -- NOT exposing customer_sk (technical key)
+```
+
+**❌ Anti-Pattern Avoided**:
+```sql
+-- WRONG: Exposing surrogate keys to business users
+SELECT 
+    customer_sk,        -- Technical key (confusing for users)
+    customer_id,        -- Redundant with surrogate key
+    
+-- WRONG: Using surrogate keys in business logic
+COUNT(DISTINCT customer_sk)  -- Should use customer_id instead
+```
+
+#### **Benefits Achieved**
+1. **Business User Friendly**: All exposed identifiers are meaningful business keys
+2. **External Integration Ready**: APIs and tools like Gradio can easily understand the data
+3. **Performance Optimized**: Internal joins still leverage surrogate key efficiency
+4. **Future-Proof**: Easy to extend and integrate with new applications
+
 ---
 
 ## 📊 Analytics OBT Layer - Detailed Structure
@@ -266,6 +313,8 @@ The Analytics OBT (One Big Table) layer provides **business-ready, denormalized 
 - **Ad-hoc Analysis**: Data science and exploration
 - **Real-time Dashboards**: Streamlit, Plotly Dash
 
+**⭐ Key Design Principle**: All tables use **natural business keys** for maximum accessibility and integration ease.
+
 ### Complete Table Specifications
 
 #### 1. Revenue Analytics OBT (`revenue_analytics_obt`)
@@ -275,7 +324,12 @@ The Analytics OBT (One Big Table) layer provides **business-ready, denormalized 
 
 **Schema Structure**:
 ```sql
-revenue_sk                BIGINT      -- Primary key (surrogate)
+revenue_sk                STRING      -- Primary key (natural: order_id + order_item_id)
+order_id                 STRING      -- Natural order identifier
+order_item_id           INT64       -- Item sequence within order
+customer_id             STRING      -- Natural customer identifier
+product_id              STRING      -- Natural product identifier
+seller_id               STRING      -- Natural seller identifier
 order_date               DATE        -- Transaction date for time analysis
 customer_state           STRING      -- Geographic revenue segmentation
 item_price               NUMERIC     -- Base item price (additive measure)
@@ -301,7 +355,8 @@ shipping_complexity     STRING      -- Logistics complexity tier
 
 **Schema Structure**:
 ```sql
-customer_sk              BIGINT      -- Primary key (surrogate)
+customer_sk              STRING      -- Primary key (natural: customer_id)
+customer_id             STRING      -- Natural customer identifier
 customer_segment         STRING      -- RFM-based business segmentation
 total_spent             NUMERIC     -- Customer lifetime value (CLV)
 churn_risk_level        STRING      -- Predictive churn classification
@@ -326,7 +381,8 @@ satisfaction_tier       STRING      -- Review-based satisfaction scoring
 
 **Schema Structure**:
 ```sql
-seller_sk               BIGINT      -- Primary key (surrogate)
+seller_sk               STRING      -- Primary key (natural: seller_id)
+seller_id               STRING      -- Natural seller identifier
 performance_tier        STRING      -- Performance-based classification
 seller_segment          STRING      -- Business size segmentation
 total_revenue           NUMERIC     -- Seller's total generated revenue
@@ -349,7 +405,10 @@ total_revenue           NUMERIC     -- Seller's total generated revenue
 
 **Schema Structure**:
 ```sql
-payment_transaction_sk   BIGINT      -- Primary key (surrogate)
+payment_transaction_sk   STRING      -- Primary key (natural: order_id + order_item_id)
+order_id                STRING      -- Natural order identifier
+order_item_id          INT64       -- Item sequence within order
+customer_id            STRING      -- Natural customer identifier
 payment_type            STRING      -- Payment method classification
 installment_category    STRING      -- Installment behavior grouping
 payment_risk_level      STRING      -- Risk assessment classification
@@ -398,7 +457,10 @@ market_tier                STRING      -- Market importance stratification
 
 **Schema Structure**:
 ```sql
-delivery_transaction_sk     BIGINT      -- Primary key (surrogate)
+delivery_transaction_sk     STRING      -- Primary key (natural: order_id)
+order_id                   STRING      -- Natural order identifier
+customer_id               STRING      -- Natural customer identifier
+seller_id                 STRING      -- Natural seller identifier
 delivery_performance_tier   STRING      -- Overall delivery performance
 delivery_speed_tier        STRING      -- Speed classification
 delivery_accuracy_tier     STRING      -- Timing accuracy vs estimates
@@ -416,18 +478,75 @@ order_status              STRING      -- Current fulfillment status
 - Delivery time prediction modeling
 - Customer experience improvement
 
+### Product Analytics OBT (`product_analytics_obt`)
+**Purpose**: Product performance and category analysis  
+**Grain**: One row per product  
+**Row Count**: ~33,000 unique products
+
+**Schema Structure**:
+```sql
+product_sk              STRING      -- Primary key (natural: product_id)
+product_id              STRING      -- Natural product identifier
+product_segment         STRING      -- Performance-based classification
+category_en             STRING      -- Product category (English)
+category_rank_in_seg    INT64       -- Rank within product segment
+total_revenue           NUMERIC     -- Product's total generated revenue
+```
+
+**Product Segments**:
+- `product_segment`: ['star_product', 'strong_product', 'steady_product', 'developing_product', 'niche_product', 'underperforming_product']
+
+**Use Cases**:
+- Product portfolio optimization
+- Category performance analysis
+- Inventory planning and management
+- Marketing campaign targeting
+
+### Revenue Analytics OBT (`revenue_analytics_obt`)
+**Purpose**: Comprehensive financial performance analysis  
+**Grain**: One row per order item  
+**Row Count**: ~112,600 order items
+
+**Schema Structure**:
+```sql
+revenue_sk              STRING      -- Primary key (natural: order_id + order_item_id)
+order_id                STRING      -- Natural order identifier
+order_item_id          INT64       -- Item sequence within order
+customer_id            STRING      -- Natural customer identifier
+seller_id              STRING      -- Natural seller identifier
+product_id              STRING      -- Natural product identifier
+revenue_tier            STRING      -- Transaction value classification
+profitability_segment   STRING      -- Business profitability grouping
+customer_tier           STRING      -- Customer value classification
+seller_tier             STRING      -- Seller performance classification
+total_revenue           NUMERIC     -- Transaction total revenue
+freight_value           NUMERIC     -- Shipping cost component
+```
+
+**Revenue Classifications**:
+- `revenue_tier`: ['premium_transaction', 'high_value', 'medium_value', 'standard_value', 'low_value', 'micro_transaction']
+- `profitability_segment`: ['high_margin', 'medium_margin', 'low_margin', 'break_even', 'loss_making']
+- `customer_tier`: ['vip_customer', 'high_value_customer', 'regular_customer', 'budget_customer', 'first_time_customer']
+- `seller_tier`: ['premium_seller', 'established_seller', 'growing_seller', 'new_seller', 'struggling_seller']
+
+**Use Cases**:
+- Financial performance monitoring
+- Profitability analysis by segment
+- Commission and fee optimization
+- Market strategy development
+
 ### Integration Patterns for External Applications
 
 #### For Gradio Applications:
 ```python
-# Example connection pattern
+# Example connection pattern using natural keys
 from google.cloud import bigquery
 
 client = bigquery.Client(project='project-olist-470307')
 
-# Query analytics OBT for ML features
+# Query analytics OBT for ML features using natural keys
 query = """
-SELECT customer_sk, customer_segment, total_spent, churn_risk_level
+SELECT customer_id, customer_segment, total_spent, churn_risk_level
 FROM `project-olist-470307.olist_analytics.customer_analytics_obt`
 WHERE churn_risk_level IN ('medium_churn_risk', 'high_churn_risk')
 """
@@ -437,14 +556,24 @@ df = client.query(query).to_dataframe()
 
 #### For API Development:
 ```python
-# FastAPI endpoint example
+# FastAPI endpoint example using natural keys
+@app.get("/analytics/customer/{customer_id}")
+async def get_customer_analytics(customer_id: str):
+    query = f"""
+    SELECT customer_segment, total_spent, churn_risk_level, satisfaction_tier
+    FROM `project-olist-470307.olist_analytics.customer_analytics_obt`
+    WHERE customer_id = '{customer_id}'
+    """
+    return query_bigquery(query)
+
 @app.get("/analytics/revenue/{state}")
 async def get_revenue_by_state(state: str):
     query = f"""
-    SELECT market_segment, SUM(allocated_payment) as total_revenue
-    FROM `project-olist-470307.olist_analytics.revenue_analytics_obt`
-    WHERE customer_state = '{state}'
-    GROUP BY market_segment
+    SELECT profitability_segment, SUM(total_revenue) as revenue
+    FROM `project-olist-470307.olist_analytics.revenue_analytics_obt` r
+    JOIN `project-olist-470307.olist_dwh.dim_customers` c ON r.customer_id = c.customer_id
+    WHERE c.customer_state = '{state}'
+    GROUP BY profitability_segment
     """
     return query_bigquery(query)
 ```
