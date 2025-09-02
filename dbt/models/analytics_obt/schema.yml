@@ -1,0 +1,260 @@
+version: 2
+
+models:
+  # =============================================================================
+  # ANALYTICS ONE BIG TABLES (OBTs)
+  # =============================================================================
+  
+  - name: revenue_analytics_obt
+    description: "Comprehensive revenue analysis across all dimensions enabling flexible aggregation and drill-down capabilities"
+    columns:
+      - name: revenue_sk
+        description: "Primary key - surrogate key for revenue transactions"
+        tests:
+          - not_null
+          - unique
+      
+      - name: order_date
+        description: "Order transaction date"
+        tests:
+          - not_null
+      
+      - name: customer_state
+        description: "Customer geographic state"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['SP', 'RJ', 'MG', 'RS', 'PR', 'SC', 'BA', 'GO', 'ES', 'PE', 'CE', 'PB', 'PA', 'RN', 'AL', 'MT', 'MS', 'DF', 'PI', 'SE', 'RO', 'TO', 'AC', 'AM', 'AP', 'RR']
+      
+      - name: item_price
+        description: "Item price amount"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 10000
+      
+      - name: allocated_payment
+        description: "Proportionally allocated payment amount"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 15000
+      
+      - name: market_segment
+        description: "Geographic market classification"
+        tests:
+          - accepted_values:
+              values: ['sao_paulo_market', 'major_southeast', 'south_market', 'other_markets']
+      
+      - name: shipping_complexity
+        description: "Logistics complexity classification"
+        tests:
+          - accepted_values:
+              values: ['same_state', 'southeast_region', 'south_region', 'cross_region']
+
+  - name: customer_analytics_obt
+    description: "Customer behavior, satisfaction, and lifecycle analysis for comprehensive customer insights"
+    columns:
+      - name: customer_sk
+        description: "Primary key - customer surrogate key"
+        tests:
+          - not_null
+          - unique
+      
+      - name: customer_segment
+        description: "Customer business value segmentation"
+        tests:
+          - accepted_values:
+              values: ['champion', 'loyal_customer', 'potential_loyalist', 'new_customer_high_value', 'new_customer_low_value', 'hibernating', 'at_risk', 'needs_attention']
+      
+      - name: total_spent
+        description: "Customer lifetime spending"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 50000
+      
+      - name: churn_risk_level
+        description: "Customer churn risk assessment"
+        tests:
+          - accepted_values:
+              values: ['active', 'low_churn_risk', 'medium_churn_risk', 'high_churn_risk']
+      
+      - name: satisfaction_tier
+        description: "Customer satisfaction classification"
+        tests:
+          - accepted_values:
+              values: ['highly_satisfied', 'satisfied', 'neutral', 'dissatisfied', 'highly_dissatisfied', 'no_feedback']
+
+  - name: seller_analytics_obt
+    description: "Seller performance evaluation and marketplace insights for seller management"
+    columns:
+      - name: seller_sk
+        description: "Primary key - seller surrogate key"
+        tests:
+          - not_null
+          - unique
+      
+      - name: performance_tier
+        description: "Seller performance classification"
+        tests:
+          - accepted_values:
+              values: ['top_performer', 'high_performer', 'good_performer', 'average_performer', 'underperformer', 'new_seller']
+      
+      - name: seller_segment
+        description: "Seller business size classification"
+        tests:
+          - accepted_values:
+              values: ['enterprise_seller', 'power_seller', 'professional_seller', 'regular_seller', 'small_seller', 'micro_seller']
+      
+      - name: total_revenue
+        description: "Seller total revenue generated"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 100000
+
+  - name: payment_analytics_obt
+    description: "Payment behavior analysis and installment insights for financial planning"
+    columns:
+      - name: payment_transaction_sk
+        description: "Primary key - payment transaction surrogate key"
+        tests:
+          - not_null
+          - unique
+      
+      - name: payment_type
+        description: "Payment method used"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
+      
+      - name: installment_category
+        description: "Payment installment classification"
+        tests:
+          - accepted_values:
+              values: ['single_payment', 'short_installment', 'medium_installment', 'long_installment', 'extended_installment', 'unknown']
+      
+      - name: payment_risk_level
+        description: "Payment risk assessment"
+        tests:
+          - accepted_values:
+              values: ['minimal_risk', 'low_risk', 'medium_risk', 'high_risk']
+      
+      - name: customer_payment_profile
+        description: "Customer payment method preference"
+        tests:
+          - accepted_values:
+              values: ['credit_card_primary', 'boleto_preferred', 'debit_card_preferred', 'voucher_user', 'mixed_payment_user']
+
+  - name: geographic_analytics_obt
+    description: "Geographic market analysis and regional performance insights for market expansion"
+    columns:
+      - name: state_code
+        description: "Primary key - Brazilian state code"
+        tests:
+          - not_null
+          - unique
+          - accepted_values:
+              values: ['SP', 'RJ', 'MG', 'RS', 'PR', 'SC', 'BA', 'GO', 'ES', 'PE', 'CE', 'PB', 'PA', 'RN', 'AL', 'MT', 'MS', 'DF', 'PI', 'SE', 'RO', 'TO', 'AC', 'AM', 'AP', 'RR']
+      
+      - name: market_development_tier
+        description: "Market development classification"
+        tests:
+          - accepted_values:
+              values: ['tier_1_developed', 'tier_2_growing', 'tier_3_emerging', 'tier_4_developing', 'tier_5_nascent']
+      
+      - name: geographic_region
+        description: "Brazilian geographic region"
+        tests:
+          - accepted_values:
+              values: ['southeast', 'south', 'center_west', 'northeast', 'north', 'unknown']
+      
+      - name: market_tier
+        description: "Market importance tier"
+        tests:
+          - accepted_values:
+              values: ['tier_1_sao_paulo', 'tier_1_major_southeast', 'tier_2_south', 'tier_2_major_regional', 'tier_3_secondary', 'tier_4_emerging']
+
+  - name: delivery_analytics_obt
+    description: "Delivery performance monitoring and logistics insights for operational excellence"
+    columns:
+      - name: delivery_transaction_sk
+        description: "Primary key - delivery transaction surrogate key"
+        tests:
+          - not_null
+          - unique
+      
+      - name: delivery_performance_tier
+        description: "Overall delivery performance classification"
+        tests:
+          - accepted_values:
+              values: ['outstanding', 'good', 'average', 'poor', 'unclassified']
+      
+      - name: delivery_speed_tier
+        description: "Delivery speed classification"
+        tests:
+          - accepted_values:
+              values: ['excellent', 'good', 'average', 'poor', 'very_poor', 'unknown']
+      
+      - name: delivery_accuracy_tier
+        description: "Delivery timing accuracy vs estimates"
+        tests:
+          - accepted_values:
+              values: ['early_delivery', 'on_time_delivery', 'slightly_late', 'late_delivery', 'very_late', 'no_estimate']
+      
+      - name: order_status
+        description: "Current order status"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['delivered', 'shipped', 'processing', 'canceled', 'approved', 'invoiced', 'created', 'unavailable']
+
+# =============================================================================
+# ANALYTICS LAYER TESTS
+# =============================================================================
+tests:
+  - name: analytics_data_consistency_check
+    description: "Verify analytics OBTs maintain data consistency with warehouse layer"
+    
+  - name: customer_segmentation_completeness
+    description: "Ensure all customers are properly segmented"
+    
+  - name: revenue_reconciliation_test
+    description: "Verify revenue totals match across all analytics tables"
+    
+  - name: geographic_coverage_completeness
+    description: "Ensure all Brazilian states are represented in geographic analytics"
+#   - name: obt_customer_order_summary
+#     description: "Denormalized customer order analytics table"
+#     columns:
+#       - name: customer_id
+#         description: "Customer identifier"
+#         tests:
+#           - not_null
+#           - unique
+#   
+#   - name: obt_product_performance
+#     description: "Product sales and review performance analytics"
+#   
+#   - name: obt_seller_analytics
+#     description: "Seller performance and geography analytics"
+#   
+#   - name: obt_payment_behavior
+#     description: "Customer payment behavior and preferences"
+
+# =============================================================================
+# ANALYTICS LAYER TESTS
+# =============================================================================
+# Uncomment and modify the tests section when you create OBT models:
+# tests:
+#   - name: obt_data_freshness_check
+#     description: "Verify OBT tables are updated within expected timeframes"
+#   
+#   - name: obt_aggregation_accuracy
+#     description: "Verify aggregations match source fact table totals"

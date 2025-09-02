@@ -1,0 +1,513 @@
+version: 2
+
+models:
+  # =============================================================================
+  # FACT TABLE
+  # =============================================================================
+  - name: fact_order_items
+    description: "Central fact table containing all measurable metrics for order item analysis. Grain: One row per order item (most granular level)."
+    columns:
+      - name: order_item_sk
+        description: "Surrogate key (Primary Key)"
+        tests:
+          - not_null
+          - unique
+      
+      - name: order_id
+        description: "Natural key for order identification"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_orders')
+              field: order_id
+      
+      - name: order_item_id
+        description: "Natural key for item within order"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 50
+      
+      - name: order_sk
+        description: "Foreign key to dim_orders"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_orders')
+              field: order_sk
+      
+      - name: customer_sk
+        description: "Foreign key to dim_customer"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_sk
+      
+      - name: product_sk
+        description: "Foreign key to dim_product"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_product')
+              field: product_sk
+      
+      - name: seller_sk
+        description: "Foreign key to dim_seller"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_seller')
+              field: seller_sk
+      
+      - name: payment_sk
+        description: "Foreign key to dim_payment"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_payment')
+              field: payment_sk
+      
+      - name: review_sk
+        description: "Foreign key to dim_order_reviews (nullable)"
+        tests:
+          - relationships:
+              to: ref('dim_order_reviews')
+              field: review_sk
+      
+      - name: order_date_sk
+        description: "Foreign key to dim_date"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_sk
+      
+      - name: shipping_limit_date_sk
+        description: "Foreign key to dim_date (nullable)"
+        tests:
+          - relationships:
+              to: ref('dim_date')
+              field: date_sk
+      
+      - name: customer_geography_sk
+        description: "Foreign key to dim_geolocation"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_geolocation')
+              field: geolocation_sk
+      
+      - name: seller_geography_sk
+        description: "Foreign key to dim_geolocation"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_geolocation')
+              field: geolocation_sk
+      
+      - name: price
+        description: "Item price (additive measure)"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 10000
+      
+      - name: freight_value
+        description: "Shipping cost (additive measure)"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1000
+      
+      - name: payment_value
+        description: "Allocated payment amount (additive measure)"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 15000
+      
+      - name: payment_installments
+        description: "Number of payment installments"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 24
+      
+      - name: review_score
+        description: "Customer review score (1-5)"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 5
+
+  # =============================================================================
+  # DIMENSION TABLES
+  # =============================================================================
+  - name: dim_date
+    description: "Time dimension for temporal analysis"
+    columns:
+      - name: date_sk
+        description: "Surrogate key (Primary Key) - YYYYMMDD format"
+        tests:
+          - not_null
+          - unique
+      
+      - name: date_value
+        description: "Actual date value"
+        tests:
+          - not_null
+          - unique
+      
+      - name: year
+        description: "Year component"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 2016
+              max_value: 2025
+      
+      - name: quarter
+        description: "Quarter component (1-4)"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 4
+      
+      - name: month
+        description: "Month component (1-12)"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 12
+      
+      - name: day_of_month
+        description: "Day of month (1-31)"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 31
+      
+      - name: day_of_week
+        description: "Day of week (1-7)"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 7
+      
+      - name: is_weekend
+        description: "Weekend indicator"
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+  - name: dim_customer
+    description: "Customer descriptive attributes"
+    columns:
+      - name: customer_sk
+        description: "Surrogate key (Primary Key)"
+        tests:
+          - not_null
+          - unique
+      
+      - name: customer_id
+        description: "Natural key from source system"
+        tests:
+          - not_null
+          - unique
+      
+      - name: customer_unique_id
+        description: "Unique customer identifier"
+        tests:
+          - unique
+      
+      - name: customer_zip_code_prefix
+        description: "Customer postal code prefix"
+        tests:
+          - dbt_utils.not_null_proportion:
+              at_least: 0.95
+      
+      - name: customer_city
+        description: "Customer city"
+        tests:
+          - dbt_utils.not_null_proportion:
+              at_least: 0.95
+      
+      - name: customer_state
+        description: "Customer state"
+        tests:
+          - dbt_utils.not_null_proportion:
+              at_least: 0.95
+          - accepted_values:
+              values: ['SP', 'RJ', 'MG', 'RS', 'PR', 'SC', 'BA', 'GO', 'ES', 'PE', 'CE', 'PB', 'PA', 'RN', 'AL', 'MT', 'MS', 'DF', 'PI', 'SE', 'RO', 'TO', 'AC', 'AM', 'AP', 'RR']
+
+  - name: dim_geolocation
+    description: "Geographic information for customers and sellers"
+    columns:
+      - name: geolocation_sk
+        description: "Surrogate key (Primary Key)"
+        tests:
+          - not_null
+          - unique
+      
+      - name: geolocation_zip_code_prefix
+        description: "Postal code prefix"
+        tests:
+          - not_null
+          - unique
+      
+      - name: geolocation_lat
+        description: "Latitude coordinate"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: -35
+              max_value: 5
+              inclusive: true
+      
+      - name: geolocation_lng
+        description: "Longitude coordinate"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: -75
+              max_value: -30
+              inclusive: true
+      
+      - name: geolocation_city
+        description: "City name"
+        tests:
+          - dbt_utils.not_null_proportion:
+              at_least: 0.90
+      
+      - name: geolocation_state
+        description: "State name"
+        tests:
+          - dbt_utils.not_null_proportion:
+              at_least: 0.90
+          - accepted_values:
+              values: ['SP', 'RJ', 'MG', 'RS', 'PR', 'SC', 'BA', 'GO', 'ES', 'PE', 'CE', 'PB', 'PA', 'RN', 'AL', 'MT', 'MS', 'DF', 'PI', 'SE', 'RO', 'TO', 'AC', 'AM', 'AP', 'RR']
+
+  - name: dim_product
+    description: "Product catalog and attributes"
+    columns:
+      - name: product_sk
+        description: "Surrogate key (Primary Key)"
+        tests:
+          - not_null
+          - unique
+      
+      - name: product_id
+        description: "Natural key from source system"
+        tests:
+          - not_null
+          - unique
+      
+      - name: product_category_name
+        description: "Product category (Portuguese)"
+        tests:
+          - dbt_utils.not_null_proportion:
+              at_least: 0.95
+      
+      - name: product_name_length
+        description: "Length of product name"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1000
+      
+      - name: product_description_length
+        description: "Length of product description"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 10000
+      
+      - name: product_photos_qty
+        description: "Number of product photos"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 50
+      
+      - name: product_weight_g
+        description: "Product weight in grams"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 50000
+      
+      - name: product_length_cm
+        description: "Product length in centimeters"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 200
+      
+      - name: product_height_cm
+        description: "Product height in centimeters"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 200
+      
+      - name: product_width_cm
+        description: "Product width in centimeters"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 200
+      
+      - name: product_category_name_english
+        description: "Product category (English)"
+        tests:
+          - dbt_utils.not_null_proportion:
+              at_least: 0.95
+
+  - name: dim_seller
+    description: "Seller/merchant information"
+    columns:
+      - name: seller_sk
+        description: "Surrogate key (Primary Key)"
+        tests:
+          - not_null
+          - unique
+      
+      - name: seller_id
+        description: "Natural key from source system"
+        tests:
+          - not_null
+          - unique
+      
+      - name: seller_zip_code_prefix
+        description: "Seller postal code prefix"
+        tests:
+          - dbt_utils.not_null_proportion:
+              at_least: 0.95
+      
+      - name: seller_city
+        description: "Seller city"
+        tests:
+          - dbt_utils.not_null_proportion:
+              at_least: 0.95
+      
+      - name: seller_state
+        description: "Seller state"
+        tests:
+          - dbt_utils.not_null_proportion:
+              at_least: 0.95
+          - accepted_values:
+              values: ['SP', 'RJ', 'MG', 'RS', 'PR', 'SC', 'BA', 'GO', 'ES', 'PE', 'CE', 'PB', 'PA', 'RN', 'AL', 'MT', 'MS', 'DF', 'PI', 'SE', 'RO', 'TO', 'AC', 'AM', 'AP', 'RR']
+
+  - name: dim_payment
+    description: "Payment method information"
+    columns:
+      - name: payment_sk
+        description: "Surrogate key (Primary Key)"
+        tests:
+          - not_null
+          - unique
+      
+      - name: order_id
+        description: "Order identifier"
+        tests:
+          - not_null
+      
+      - name: payment_sequential
+        description: "Payment sequence number"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 30
+      
+      - name: payment_type
+        description: "Payment method type"
+        tests:
+          - accepted_values:
+              values: ['credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
+
+  - name: dim_order_reviews
+    description: "Customer review information"
+    columns:
+      - name: review_sk
+        description: "Surrogate key (Primary Key)"
+        tests:
+          - not_null
+          - unique
+      
+      - name: review_id
+        description: "Natural key from source system"
+        tests:
+          - unique
+      
+      - name: order_id
+        description: "Associated order identifier"
+        tests:
+          - not_null
+      
+      - name: review_comment_title
+        description: "Review title"
+      
+      - name: review_comment_message
+        description: "Review message content"
+      
+      - name: review_creation_date
+        description: "Review creation timestamp"
+        tests:
+          - not_null
+      
+      - name: review_answer_timestamp
+        description: "Seller response timestamp"
+
+  - name: dim_orders
+    description: "Order lifecycle and status information"
+    columns:
+      - name: order_sk
+        description: "Surrogate key (Primary Key)"
+        tests:
+          - not_null
+          - unique
+      
+      - name: order_id
+        description: "Natural key from source system"
+        tests:
+          - not_null
+          - unique
+      
+      - name: order_status
+        description: "Current order status"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['delivered', 'shipped', 'processing', 'canceled', 'approved', 'invoiced', 'created', 'unavailable']
+      
+      - name: order_purchase_timestamp
+        description: "Order purchase time"
+        tests:
+          - not_null
+      
+      - name: order_approved_at
+        description: "Order approval time"
+      
+      - name: order_delivered_carrier_date
+        description: "Carrier delivery date"
+      
+      - name: order_delivered_customer_date
+        description: "Customer delivery date"
+      
+      - name: order_estimated_delivery_date
+        description: "Estimated delivery date"
+
+# =============================================================================
+# WAREHOUSE LAYER TESTS
+# =============================================================================
+tests:
+  - name: fact_order_items_price_freight_consistency
+    description: "Verify that price + freight approximately equals payment value"
+    
+  - name: warehouse_referential_integrity_check
+    description: "Verify all foreign key relationships are maintained"
+    
+  - name: dimensional_model_grain_test
+    description: "Verify fact table grain: one row per order item"

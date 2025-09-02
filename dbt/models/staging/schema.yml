@@ -1,0 +1,430 @@
+version: 2
+
+models:
+  # ========================================
+  # CUSTOMER DATA
+  # ========================================
+  - name: stg_customers
+    description: "Staging table for customer master data with comprehensive data quality flags"
+    meta:
+      owner: "data_team"
+      layer: "staging"
+    
+    columns:
+      - name: customer_id
+        description: "Unique identifier for customer"
+        tests:
+          - not_null
+          - unique
+      
+      - name: customer_unique_id
+        description: "Alternative unique customer identifier"
+        tests:
+          - not_null
+          - unique
+      
+      - name: customer_zip_code_prefix
+        description: "Customer's ZIP code (first 5 digits)"
+        tests:
+          - not_null
+      
+      - name: customer_city
+        description: "Customer's city name"
+        tests:
+          - not_null
+      
+      - name: customer_state
+        description: "Customer's state abbreviation"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO']
+              config:
+                severity: warn
+      
+      - name: had_duplicates
+        description: "Flag indicating if this record was deduplicated"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+      
+      - name: ingestion_timestamp
+        description: "Timestamp when record was processed"
+        tests:
+          - not_null
+
+  # ========================================
+  # ORDER DATA
+  # ========================================
+  - name: stg_orders
+    description: "Staging table for order header information with delivery tracking and quality flags"
+    meta:
+      owner: "data_team"
+      layer: "staging"
+    
+    columns:
+      - name: order_id
+        description: "Unique identifier for order"
+        tests:
+          - not_null
+          - unique
+      
+      - name: customer_id
+        description: "Foreign key to customer"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+              config:
+                severity: warn
+      
+      - name: order_status
+        description: "Current status of the order"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['delivered', 'shipped', 'processing', 'approved', 'invoiced', 'canceled', 'unavailable', 'created']
+      
+      - name: order_purchase_timestamp_clean
+        description: "Cleaned order purchase timestamp"
+        tests:
+          - not_null
+      
+      - name: had_duplicates
+        description: "Flag indicating if this record was deduplicated"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+      
+      - name: ingestion_timestamp
+        description: "Timestamp when record was processed"
+        tests:
+          - not_null
+
+  # ========================================
+  # PRODUCT DATA
+  # ========================================
+  - name: stg_products
+    description: "Staging table for product catalog with dimensions and quality validation"
+    meta:
+      owner: "data_team"
+      layer: "staging"
+    
+    columns:
+      - name: product_id
+        description: "Unique identifier for product"
+        tests:
+          - not_null
+          - unique
+      
+      - name: product_category_name
+        description: "Product category in Portuguese"
+        tests:
+          - not_null
+      
+      - name: product_name_length
+        description: "Length of product name in characters"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1000
+              config:
+                severity: warn
+      
+      - name: product_weight_g
+        description: "Product weight in grams"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 50000
+              config:
+                severity: warn
+      
+      - name: had_duplicates
+        description: "Flag indicating if this record was deduplicated"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+  # ========================================
+  # ORDER ITEMS DATA
+  # ========================================
+  - name: stg_order_items
+    description: "Staging table for order line items with pricing and shipping information"
+    meta:
+      owner: "data_team"
+      layer: "staging"
+    
+    columns:
+      - name: order_id
+        description: "Foreign key to order"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+              config:
+                severity: warn
+      
+      - name: order_item_id
+        description: "Sequential item number within order"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 50
+              config:
+                severity: warn
+      
+      - name: product_id
+        description: "Foreign key to product"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: product_id
+              config:
+                severity: warn
+      
+      - name: seller_id
+        description: "Foreign key to seller"
+        tests:
+          - not_null
+      
+      - name: price
+        description: "Item price in Brazilian Real"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 10000
+              config:
+                severity: warn
+      
+      - name: freight_value
+        description: "Shipping cost for this item"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1000
+              config:
+                severity: warn
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_id
+            - order_item_id
+
+  # ========================================
+  # SELLER DATA
+  # ========================================
+  - name: stg_sellers
+    description: "Staging table for seller information with location data"
+    meta:
+      owner: "data_team"
+      layer: "staging"
+    
+    columns:
+      - name: seller_id
+        description: "Unique identifier for seller"
+        tests:
+          - not_null
+          - unique
+      
+      - name: seller_zip_code_prefix
+        description: "Seller's ZIP code (first 5 digits)"
+        tests:
+          - not_null
+      
+      - name: seller_city
+        description: "Seller's city name"
+        tests:
+          - not_null
+      
+      - name: seller_state
+        description: "Seller's state abbreviation"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO']
+              config:
+                severity: warn
+
+  # ========================================
+  # GEOLOCATION DATA
+  # ========================================
+  - name: stg_geolocation
+    description: "Staging table for Brazilian ZIP code geolocation data"
+    meta:
+      owner: "data_team"
+      layer: "staging"
+    
+    columns:
+      - name: geolocation_zip_code_prefix
+        description: "ZIP code (first 5 digits)"
+        tests:
+          - not_null
+      
+      - name: geolocation_lat
+        description: "Latitude coordinate"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: -35
+              max_value: 5
+              config:
+                severity: warn
+      
+      - name: geolocation_lng
+        description: "Longitude coordinate"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: -75
+              max_value: -30
+              config:
+                severity: warn
+      
+      - name: geolocation_city
+        description: "City name for this ZIP code"
+        tests:
+          - not_null
+      
+      - name: geolocation_state
+        description: "State abbreviation for this ZIP code"
+        tests:
+          - not_null
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - geolocation_zip_code_prefix
+            - geolocation_city
+            - geolocation_state
+
+  # ========================================
+  # ORDER PAYMENTS DATA
+  # ========================================
+  - name: stg_order_payments
+    description: "Staging table for order payment information"
+    meta:
+      owner: "data_team"
+      layer: "staging"
+    
+    columns:
+      - name: order_id
+        description: "Foreign key to order"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+              config:
+                severity: warn
+      
+      - name: payment_sequential
+        description: "Sequential payment number for multi-payment orders"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 50
+      
+      - name: payment_type
+        description: "Payment method used"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
+      
+      - name: payment_installments
+        description: "Number of payment installments"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 24
+              config:
+                severity: warn
+      
+      - name: payment_value
+        description: "Payment amount in Brazilian Real"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 20000
+              config:
+                severity: warn
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_id
+            - payment_sequential
+
+  # ========================================
+  # ORDER REVIEWS DATA
+  # ========================================
+  - name: stg_order_reviews
+    description: "Staging table for customer order reviews and ratings"
+    meta:
+      owner: "data_team"
+      layer: "staging"
+    
+    columns:
+      - name: review_id
+        description: "Unique identifier for review"
+        tests:
+          - not_null
+          - unique
+      
+      - name: order_id
+        description: "Foreign key to order"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+              config:
+                severity: warn
+      
+      - name: review_score
+        description: "Customer rating from 1 to 5"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]
+      
+      - name: review_creation_date_clean
+        description: "Cleaned review creation timestamp"
+        tests:
+          - not_null
+
+  # ========================================
+  # PRODUCT CATEGORY TRANSLATION DATA
+  # ========================================
+  - name: stg_product_category_name_translation
+    description: "Staging table for product category translations (Portuguese to English)"
+    meta:
+      owner: "data_team"
+      layer: "staging"
+    
+    columns:
+      - name: product_category_name
+        description: "Product category name in Portuguese"
+        tests:
+          - not_null
+          - unique
+      
+      - name: product_category_name_english
+        description: "Product category name in English"
+        tests:
+          - not_null

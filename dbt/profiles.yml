@@ -1,0 +1,15 @@
+# dbt BigQuery profile for Olist_BQ
+Olist_BQ:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: project-olist-470307
+      dataset: dbt_olist
+      location: asia-southeast1
+      threads: 1
+      timeout_seconds: 300
+      priority: interactive
+      retries: 1
+
