@@ -9,7 +9,7 @@ models:
     description: "Comprehensive revenue analysis across all dimensions enabling flexible aggregation and drill-down capabilities"
     columns:
       - name: revenue_sk
-        description: "Primary key - surrogate key for revenue transactions"
+        description: "Primary key - business key derived from order_id and order_item_id"
         tests:
           - not_null
           - unique
@@ -58,7 +58,7 @@ models:
     description: "Customer behavior, satisfaction, and lifecycle analysis for comprehensive customer insights"
     columns:
       - name: customer_sk
-        description: "Primary key - customer surrogate key"
+        description: "Primary key - business key matching customer_id"
         tests:
           - not_null
           - unique
@@ -93,7 +93,7 @@ models:
     description: "Seller performance evaluation and marketplace insights for seller management"
     columns:
       - name: seller_sk
-        description: "Primary key - seller surrogate key"
+        description: "Primary key - business key matching seller_id"
         tests:
           - not_null
           - unique
@@ -122,7 +122,7 @@ models:
     description: "Payment behavior analysis and installment insights for financial planning"
     columns:
       - name: payment_transaction_sk
-        description: "Primary key - payment transaction surrogate key"
+        description: "Primary key - business key derived from order_id and order_item_id"
         tests:
           - not_null
           - unique
@@ -185,7 +185,7 @@ models:
     description: "Delivery performance monitoring and logistics insights for operational excellence"
     columns:
       - name: delivery_transaction_sk
-        description: "Primary key - delivery transaction surrogate key"
+        description: "Primary key - business key derived from order_id and order_item_id"
         tests:
           - not_null
           - unique

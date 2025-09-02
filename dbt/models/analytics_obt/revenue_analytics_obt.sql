@@ -61,14 +61,14 @@
 with revenue_analytics_obt as (
     select 
         -- =============================================================================
-        -- IDENTIFIERS & KEYS
+        -- IDENTIFIERS & KEYS (Natural Keys for Business Use)
         -- =============================================================================
-        f.order_item_sk as revenue_sk,
+        concat(f.order_id, '-', f.order_item_id) as revenue_sk,
         f.order_id,
         f.order_item_id,
-        f.customer_sk,
-        f.product_sk,
-        f.seller_sk,
+        c.customer_id,
+        p.product_id,
+        s.seller_id,
         
         -- =============================================================================
         -- DATE DIMENSIONS
@@ -88,7 +88,6 @@ with revenue_analytics_obt as (
         -- =============================================================================
         -- CUSTOMER DIMENSIONS
         -- =============================================================================
-        c.customer_id,
         c.customer_city,
         c.customer_state,
         c.customer_zip_code_prefix,
@@ -96,7 +95,6 @@ with revenue_analytics_obt as (
         -- =============================================================================
         -- PRODUCT DIMENSIONS  
         -- =============================================================================
-        p.product_id,
         p.product_category_name as product_category_portuguese,
         p.product_category_name_english as product_category_english,
         p.product_weight_g,
@@ -114,7 +112,6 @@ with revenue_analytics_obt as (
         -- =============================================================================
         -- SELLER DIMENSIONS
         -- =============================================================================
-        s.seller_id,
         s.seller_city,
         s.seller_state,
         s.seller_zip_code_prefix,

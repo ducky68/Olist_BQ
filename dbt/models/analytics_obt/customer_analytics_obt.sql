@@ -50,7 +50,6 @@
 
 with customer_order_history as (
     select 
-        customer_sk,
         customer_id,
         customer_city,
         customer_state,
@@ -97,15 +96,15 @@ with customer_order_history as (
         count(distinct year_month) as months_active
 
     from {{ ref('revenue_analytics_obt') }}
-    group by 1,2,3,4,5
+    group by 1,2,3,4
 ),
 
 customer_analytics_obt as (
     select 
         -- =============================================================================
-        -- CUSTOMER IDENTIFIERS
+        -- CUSTOMER IDENTIFIERS (Natural Keys for Business Use)
         -- =============================================================================
-        customer_sk,
+        customer_id as customer_sk,
         customer_id,
         customer_city,
         customer_state,

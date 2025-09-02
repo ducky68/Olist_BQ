@@ -61,7 +61,7 @@ def get_delivery_overview_metrics():
     SELECT 
         COUNT(*) as total_deliveries,
         COUNT(DISTINCT order_id) as unique_orders,
-        COUNT(DISTINCT customer_sk) as unique_customers,
+        COUNT(DISTINCT customer_id) as unique_customers,
         SUM(flag_delivered) as delivered_orders,
         SUM(flag_in_transit) as in_transit_orders,
         SUM(flag_canceled) as canceled_orders,
@@ -85,7 +85,7 @@ def get_order_status_distribution():
         ROUND(AVG(freight_cost), 2) as avg_shipping_cost,
         ROUND(AVG(item_price), 2) as avg_order_value,
         ROUND(AVG(review_score), 2) as avg_satisfaction,
-        COUNT(DISTINCT customer_sk) as unique_customers
+        COUNT(DISTINCT customer_id) as unique_customers
     FROM {get_table_ref(ANALYTICS_TABLES["delivery"])}
     WHERE order_status IS NOT NULL
     GROUP BY order_status
@@ -171,7 +171,7 @@ def get_delivery_trends():
         ROUND(SUM(flag_delivered) * 100.0 / COUNT(*), 1) as delivery_success_rate,
         ROUND(AVG(freight_cost), 2) as avg_shipping_cost,
         ROUND(SUM(freight_cost), 2) as total_shipping_revenue,
-        COUNT(DISTINCT customer_sk) as unique_customers,
+        COUNT(DISTINCT customer_id) as unique_customers,
         ROUND(AVG(review_score), 2) as avg_satisfaction
     FROM {get_table_ref(ANALYTICS_TABLES["delivery"])}
     WHERE order_year IS NOT NULL AND order_month IS NOT NULL

@@ -60,15 +60,14 @@
 with payment_behavior_base as (
     select 
         -- =============================================================================
-        -- IDENTIFIERS
+        -- IDENTIFIERS (Natural Keys for Business Use)
         -- =============================================================================
-        revenue_sk as payment_transaction_sk,
+        concat(order_id, '-', order_item_id) as payment_transaction_sk,
         order_id,
         order_item_id,
-        customer_sk,
         customer_id,
-        product_sk,
-        seller_sk,
+        product_id,
+        seller_id,
         
         -- =============================================================================
         -- TEMPORAL DIMENSIONS

@@ -370,7 +370,7 @@ try:
         
         with col1:
             st.write("**Customer Identification Columns:**")
-            customer_cols = ['customer_sk', 'customer_id', 'customer_city', 'customer_state', 'customer_zip_code_prefix', 'days_as_customer', 'customer_segment']
+            customer_cols = ['customer_id', 'customer_city', 'customer_state', 'customer_zip_code_prefix', 'days_as_customer', 'customer_segment']
             for col in customer_cols:
                 st.write(f"• {col}")
         

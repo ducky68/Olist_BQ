@@ -15,13 +15,13 @@
 
 with delivery_basic as (
     select 
-        -- Order identifiers
+        -- Order identifiers (Natural Keys for Business Use)
         r.order_id,
         r.order_item_id,
-        r.revenue_sk as delivery_sk,
-        r.customer_sk,
-        r.seller_sk,
-        r.product_sk,
+        concat(r.order_id, '-', r.order_item_id) as delivery_transaction_sk,
+        r.customer_id,
+        r.seller_id,
+        r.product_id,
         
         -- Geographic context
         r.customer_city,

@@ -44,7 +44,6 @@
 
 with seller_performance_base as (
     select 
-        seller_sk,
         seller_id,
         seller_city,
         seller_state,
@@ -93,15 +92,15 @@ with seller_performance_base as (
         count(distinct year_month) as months_active
 
     from {{ ref('revenue_analytics_obt') }}
-    group by 1,2,3,4,5
+    group by 1,2,3,4
 ),
 
 seller_analytics_obt as (
     select 
         -- =============================================================================
-        -- SELLER IDENTIFIERS
+        -- SELLER IDENTIFIERS (Natural Keys for Business Use)
         -- =============================================================================
-        seller_sk,
+        seller_id as seller_sk,
         seller_id,
         seller_city,
         seller_state,
