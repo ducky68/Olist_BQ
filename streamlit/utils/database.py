@@ -14,9 +14,11 @@ from config.settings import BIGQUERY_CONFIG
 def get_bigquery_client():
     """Get cached BigQuery client instance"""
     try:
-        # Initialize BigQuery client
-        # Assumes service account key is set via environment variable or default credentials
-        client = bigquery.Client()
+        # Initialize BigQuery client with correct location
+        client = bigquery.Client(
+            project=BIGQUERY_CONFIG['project_id'],
+            location=BIGQUERY_CONFIG['location']
+        )
         return client
     except Exception as e:
         st.error(f"Failed to connect to BigQuery: {str(e)}")

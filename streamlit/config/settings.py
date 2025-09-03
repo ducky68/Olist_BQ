@@ -16,7 +16,8 @@ ANALYTICS_TABLES = {
     "seller": "seller_analytics_obt",
     "payment": "payment_analytics_obt",
     "geographic": "geographic_analytics_obt",
-    "delivery": "delivery_analytics_obt"
+    "delivery": "delivery_analytics_obt",
+    "orders": "orders_analytics_obt"
 }
 
 # Streamlit Page Configuration

@@ -50,10 +50,13 @@
 
 with customer_order_history as (
     select 
-        customer_id,
-        customer_city,
-        customer_state,
-        customer_zip_code_prefix,
+        customer_unique_id,
+        -- Keep first customer_id as representative
+        min(customer_id) as customer_id,
+        -- Use first occurrence for location (customers are consistent)
+        min(customer_city) as customer_city,
+        min(customer_state) as customer_state,
+        min(customer_zip_code_prefix) as customer_zip_code_prefix,
         
         -- Order aggregations
         count(distinct order_id) as total_orders,
@@ -96,7 +99,7 @@ with customer_order_history as (
         count(distinct year_month) as months_active
 
     from {{ ref('revenue_analytics_obt') }}
-    group by 1,2,3,4
+    group by 1
 ),
 
 customer_analytics_obt as (
@@ -104,7 +107,8 @@ customer_analytics_obt as (
         -- =============================================================================
         -- CUSTOMER IDENTIFIERS (Natural Keys for Business Use)
         -- =============================================================================
-        customer_id as customer_sk,
+        customer_unique_id as customer_sk,
+        customer_unique_id,
         customer_id,
         customer_city,
         customer_state,

@@ -66,6 +66,7 @@ with payment_behavior_base as (
         order_id,
         order_item_id,
         customer_id,
+        customer_unique_id,
         product_id,
         seller_id,
         

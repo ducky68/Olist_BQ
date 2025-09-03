@@ -35,14 +35,17 @@ def get_table_ref(table_name):
 
 # Fast aggregated queries instead of loading all data
 @st.cache_data(ttl=3600)
-def get_revenue_metrics():
+def get_revenue_overview_metrics():
     """Get key revenue metrics using SQL aggregation"""
     query = f"""
     SELECT 
+        COUNT(*) as total_transactions,
+        COUNT(DISTINCT customer_unique_id) as total_unique_customers,
+        COUNT(DISTINCT customer_id) as total_customer_records,
         COUNT(DISTINCT order_id) as total_orders,
-        COUNT(DISTINCT customer_id) as total_customers,
         ROUND(SUM(item_price), 2) as total_revenue,
-        ROUND(AVG(item_price), 2) as avg_order_value,
+        ROUND(AVG(item_price), 2) as avg_revenue_per_transaction,
+        ROUND(SUM(item_price) / COUNT(DISTINCT order_id), 2) as avg_order_value,
         COUNT(*) as total_items
     FROM {get_table_ref(ANALYTICS_TABLES["revenue"])}
     """
@@ -89,7 +92,8 @@ def get_state_performance():
     SELECT 
         customer_state,
         ROUND(SUM(item_price), 2) as state_revenue,
-        COUNT(DISTINCT customer_id) as customers,
+        COUNT(DISTINCT customer_unique_id) as unique_customers,
+        COUNT(DISTINCT customer_id) as customer_records,
         COUNT(DISTINCT order_id) as orders
     FROM {get_table_ref(ANALYTICS_TABLES["revenue"])}
     WHERE customer_state IS NOT NULL
@@ -103,7 +107,7 @@ def get_state_performance():
 try:
     # Load key metrics (fast aggregated query)
     with st.spinner("Loading revenue metrics..."):
-        metrics_df = get_revenue_metrics()
+        metrics_df = get_revenue_overview_metrics()
     
     if metrics_df.empty:
         st.warning("No revenue data available. Please check your database connection.")
@@ -114,7 +118,17 @@ try:
     # Revenue Overview Metrics
     st.subheader("💰 Revenue Overview")
     
-    col1, col2, col3, col4 = st.columns(4)
+    # Add explanation about the dataset
+    with st.expander("ℹ️ About Customer Metrics"):
+        st.info("""
+        **Customer Identification in Olist:**
+        - **Total Unique Customers**: 95,419 actual unique individuals (customer_unique_id)
+        - **Total Customer Records**: 98,665 customer records (customer_id per order)
+        - **Total Orders**: 98,665 orders placed
+        - **Insight**: Some customers placed multiple orders, creating multiple customer_id records
+        """)
+    
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
     
     with col1:
         st.metric(
@@ -139,10 +153,26 @@ try:
     
     with col4:
         st.metric(
-            label="Total Customers",
-            value=f"{metrics['total_customers']:,}",
-            help="Total number of unique customers"
+            label="Unique Customers",
+            value=f"{metrics['total_unique_customers']:,}",
+            help="Number of unique customers (customer_unique_id)"
         )
+    
+    with col5:
+        st.metric(
+            label="Customer Records",
+            value=f"{metrics['total_customer_records']:,}",
+            help="Total customer records (customer_id per order)"
+        )
+    
+    with col6:
+        st.metric(
+            label="Total Items",
+            value=f"{metrics['total_items']:,}",
+            help="Total number of order line items across all orders"
+        )
+    
+    st.markdown("---")
     
     st.markdown("---")
     

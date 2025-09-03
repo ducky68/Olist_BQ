@@ -31,7 +31,8 @@ def get_payment_overview_metrics():
     query = f"""
     SELECT 
         COUNT(*) as total_payment_transactions,
-        COUNT(DISTINCT customer_id) as unique_customers,
+        COUNT(DISTINCT customer_unique_id) as unique_customers,
+        COUNT(DISTINCT customer_id) as customer_records,
         COUNT(DISTINCT order_id) as unique_orders,
         ROUND(AVG(allocated_payment), 2) as avg_payment_amount,
         ROUND(SUM(allocated_payment), 2) as total_payment_volume,
@@ -55,7 +56,7 @@ def get_payment_method_distribution():
         ROUND(SUM(allocated_payment), 2) as total_volume,
         ROUND(AVG(payment_installments), 1) as avg_installments,
         ROUND(AVG(payment_per_installment), 2) as avg_installment_amount,
-        COUNT(DISTINCT customer_id) as unique_customers
+        COUNT(DISTINCT customer_unique_id) as unique_customers
     FROM {get_table_ref(ANALYTICS_TABLES["payment"])}
     WHERE payment_type IS NOT NULL
     GROUP BY payment_type

@@ -20,6 +20,7 @@ with delivery_basic as (
         r.order_item_id,
         concat(r.order_id, '-', r.order_item_id) as delivery_transaction_sk,
         r.customer_id,
+        r.customer_unique_id,
         r.seller_id,
         r.product_id,
         

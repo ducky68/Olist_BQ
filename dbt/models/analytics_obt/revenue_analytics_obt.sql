@@ -67,6 +67,7 @@ with revenue_analytics_obt as (
         f.order_id,
         f.order_item_id,
         c.customer_id,
+        c.customer_unique_id,
         p.product_id,
         s.seller_id,
         

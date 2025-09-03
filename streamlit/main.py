@@ -53,7 +53,7 @@ with col3:
 
 st.markdown("---")
 
-col4, col5, col6 = st.columns(3)
+col4, col5, col6, col7 = st.columns(4)
 
 with col4:
     st.metric(
@@ -74,6 +74,13 @@ with col6:
         label="🚚 Delivery Analytics", 
         value="View Logistics",
         help="Monitor delivery performance, shipping times, and logistics efficiency"
+    )
+
+with col7:
+    st.metric(
+        label="📦 Orders Analytics", 
+        value="View Orders",
+        help="Comprehensive order-level analysis, complexity, and lifecycle insights"
     )
 
 # Instructions

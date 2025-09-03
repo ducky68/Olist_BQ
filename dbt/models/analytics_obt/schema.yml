@@ -215,6 +215,99 @@ models:
           - accepted_values:
               values: ['delivered', 'shipped', 'processing', 'canceled', 'approved', 'invoiced', 'created', 'unavailable']
 
+  - name: orders_analytics_obt
+    description: "Comprehensive order-level analysis and insights enabling order lifecycle and complexity analysis"
+    columns:
+      - name: order_sk
+        description: "Primary key - natural order identifier"
+        tests:
+          - not_null
+          - unique
+      
+      - name: order_id
+        description: "Natural order identifier"
+        tests:
+          - not_null
+          - unique
+      
+      - name: customer_id
+        description: "Natural customer identifier"
+        tests:
+          - not_null
+      
+      - name: order_date
+        description: "Order transaction date"
+        tests:
+          - not_null
+      
+      - name: order_status
+        description: "Current order fulfillment status"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['delivered', 'shipped', 'processing', 'canceled', 'approved', 'invoiced', 'created', 'unavailable']
+      
+      - name: delivery_performance
+        description: "Delivery performance classification"
+        tests:
+          - accepted_values:
+              values: ['early_delivery', 'on_time_delivery', 'slightly_late', 'late_delivery', 'very_late_delivery', 'delivered_no_estimate', 'in_transit', 'canceled', 'processing']
+      
+      - name: order_complexity
+        description: "Order complexity based on items and sellers"
+        tests:
+          - accepted_values:
+              values: ['simple_order', 'standard_order', 'moderate_order', 'complex_order', 'very_complex_order']
+      
+      - name: order_value_tier
+        description: "Order value classification"
+        tests:
+          - accepted_values:
+              values: ['premium_order', 'high_value_order', 'medium_value_order', 'standard_order', 'low_value_order']
+      
+      - name: total_order_value
+        description: "Total order value including items and freight"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 15000
+      
+      - name: customer_state
+        description: "Customer geographic state"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['SP', 'RJ', 'MG', 'RS', 'PR', 'SC', 'BA', 'GO', 'ES', 'PE', 'CE', 'PB', 'PA', 'RN', 'AL', 'MT', 'MS', 'DF', 'PI', 'SE', 'RO', 'TO', 'AC', 'AM', 'AP', 'RR']
+      
+      - name: total_items
+        description: "Number of items in the order"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 50
+      
+      - name: total_sellers
+        description: "Number of unique sellers in the order"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 20
+      
+      - name: market_tier
+        description: "Market importance classification"
+        tests:
+          - accepted_values:
+              values: ['tier_1_sao_paulo', 'tier_1_major_southeast', 'tier_2_south', 'tier_2_major_regional', 'tier_3_emerging']
+      
+      - name: satisfaction_level
+        description: "Customer satisfaction based on reviews"
+        tests:
+          - accepted_values:
+              values: ['highly_satisfied', 'satisfied', 'neutral', 'dissatisfied', 'highly_dissatisfied', 'no_feedback']
+
 # =============================================================================
 # ANALYTICS LAYER TESTS
 # =============================================================================

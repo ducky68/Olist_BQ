@@ -4,6 +4,11 @@
 -- Business Purpose: Geographic market analysis and regional performance insights
 -- Grain: One row per geographic market segment (state/region level)
 -- Update Frequency: Daily
+-- 
+-- IMPORTANT NOTE: Customer counts are by state activity, not unique customers.
+-- Customers who place orders from multiple states are counted in each state.
+-- Expected: 95,419 unique customers → 95,538 total state-customer relationships
+-- This includes ~37 customers active in multiple states (normal business behavior)
 -- =============================================================================
 
 {{
@@ -49,7 +54,7 @@ with geographic_base as (
         -- Aggregate core metrics
         count(distinct order_id) as total_orders,
         count(*) as total_items_sold,
-        count(distinct customer_id) as total_customers,
+        count(distinct customer_unique_id) as total_customers,
         count(distinct seller_id) as total_sellers,
         count(distinct product_id) as total_products_sold,
         count(distinct product_category_english) as total_categories_sold,
