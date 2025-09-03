@@ -51,7 +51,8 @@ def get_orders_overview_metrics():
         ROUND(SUM(total_order_value), 2) as total_revenue,
         ROUND(AVG(total_items), 2) as avg_items_per_order,
         ROUND(AVG(total_sellers), 2) as avg_sellers_per_order,
-        ROUND(AVG(avg_review_score), 2) as avg_satisfaction_score
+        ROUND(AVG(avg_review_score), 2) as avg_satisfaction_score,
+        ROUND(AVG(avg_orders_per_customer), 2) as avg_orders_per_customer
     FROM {get_table_ref(ANALYTICS_TABLES["orders"])}
     """
     return execute_custom_query(query)
@@ -231,6 +232,48 @@ def get_customer_order_frequency():
     """
     return execute_custom_query(query)
 
+@st.cache_data(ttl=3600)
+def get_customer_order_behavior():
+    """Get customer order behavior distribution using new customer behavior fields"""
+    query = f"""
+    SELECT 
+        customer_order_behavior,
+        COUNT(DISTINCT customer_unique_id) as unique_customers,
+        ROUND(COUNT(DISTINCT customer_unique_id) * 100.0 / 
+              (SELECT COUNT(DISTINCT customer_unique_id) FROM {get_table_ref(ANALYTICS_TABLES["orders"])}), 2) as percentage,
+        ROUND(AVG(total_order_value), 2) as avg_order_value,
+        ROUND(AVG(customer_total_orders), 2) as avg_orders_in_category
+    FROM {get_table_ref(ANALYTICS_TABLES["orders"])}
+    GROUP BY customer_order_behavior
+    ORDER BY 
+        CASE customer_order_behavior
+            WHEN 'single_order_customer' THEN 1
+            WHEN 'two_order_customer' THEN 2
+            WHEN 'regular_customer' THEN 3
+            WHEN 'frequent_customer' THEN 4
+            WHEN 'very_frequent_customer' THEN 5
+        END
+    """
+    return execute_custom_query(query)
+
+@st.cache_data(ttl=3600)
+def get_customer_lifetime_analysis():
+    """Analyze customer lifetime metrics using new fields"""
+    query = f"""
+    SELECT 
+        customer_unique_id,
+        customer_total_orders,
+        SUM(total_order_value) as customer_lifetime_value,
+        ROUND(AVG(total_order_value), 2) as avg_order_value,
+        ROUND(AVG(avg_review_score), 2) as avg_satisfaction,
+        customer_order_behavior
+    FROM {get_table_ref(ANALYTICS_TABLES["orders"])}
+    GROUP BY customer_unique_id, customer_total_orders, customer_order_behavior
+    ORDER BY customer_lifetime_value DESC
+    LIMIT 1000
+    """
+    return execute_custom_query(query)
+
 # =============================================================================
 # MAIN DASHBOARD
 # =============================================================================
@@ -259,7 +302,7 @@ try:
         - Financial metrics include total order value and payment behavior patterns
         """)
     
-    col1, col2, col3, col4, col5, col6 = st.columns(6)
+    col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
     
     with col1:
         st.metric(
@@ -301,6 +344,13 @@ try:
             label="Avg Satisfaction",
             value=f"{metrics['avg_satisfaction_score']:.2f}/5",
             help="Average customer satisfaction score"
+        )
+    
+    with col7:
+        st.metric(
+            label="Avg Orders/Customer",
+            value=f"{metrics['avg_orders_per_customer']:.2f}",
+            help="Average number of orders per unique customer"
         )
     
     st.markdown("---")
@@ -572,6 +622,91 @@ try:
             )
             fig.update_layout(height=400)
             st.plotly_chart(fig, use_container_width=True)
+    
+    # Customer Behavior Analysis Section
+    st.markdown("---")
+    st.subheader("🎯 Customer Behavior Analysis")
+    
+    # Customer order behavior distribution
+    with st.spinner("Loading customer behavior data..."):
+        behavior_data = get_customer_order_behavior()
+    
+    if not behavior_data.empty:
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**Customer Order Behavior Distribution**")
+            fig_behavior = px.pie(
+                behavior_data,
+                values='unique_customers',
+                names='customer_order_behavior',
+                title="Distribution of Customer Order Behaviors",
+                color_discrete_map={
+                    'single_order_customer': '#ff7f7f',
+                    'two_order_customer': '#ffbf7f',
+                    'regular_customer': '#7fbfff',
+                    'frequent_customer': '#7fff7f',
+                    'very_frequent_customer': '#bf7fff'
+                }
+            )
+            fig_behavior.update_traces(textposition='inside', textinfo='percent+label')
+            st.plotly_chart(fig_behavior, use_container_width=True)
+        
+        with col2:
+            st.markdown("**Customer Behavior Metrics**")
+            # Create a formatted table
+            behavior_display = behavior_data.copy()
+            behavior_display['customer_order_behavior'] = behavior_display['customer_order_behavior'].str.replace('_', ' ').str.title()
+            behavior_display['percentage'] = behavior_display['percentage'].astype(str) + '%'
+            behavior_display['avg_order_value'] = 'R$ ' + behavior_display['avg_order_value'].astype(str)
+            behavior_display.columns = ['Behavior Type', 'Customers', 'Percentage', 'Avg Order Value', 'Avg Orders']
+            st.dataframe(behavior_display, use_container_width=True, hide_index=True)
+    
+    # Customer Lifetime Value Analysis
+    st.markdown("**💰 Top Customer Lifetime Value Analysis**")
+    
+    with st.spinner("Loading customer lifetime value data..."):
+        lifetime_data = get_customer_lifetime_analysis()
+    
+    if not lifetime_data.empty:
+        # Top customers by lifetime value
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Top 20 customers chart
+            top_customers = lifetime_data.head(20)
+            fig_ltv = px.bar(
+                top_customers,
+                x='customer_lifetime_value',
+                y=range(len(top_customers)),
+                orientation='h',
+                title="Top 20 Customers by Lifetime Value",
+                labels={'customer_lifetime_value': 'Lifetime Value (R$)', 'y': 'Customer Rank'},
+                color='customer_order_behavior',
+                color_discrete_map={
+                    'single_order_customer': '#ff7f7f',
+                    'two_order_customer': '#ffbf7f',
+                    'regular_customer': '#7fbfff',
+                    'frequent_customer': '#7fff7f',
+                    'very_frequent_customer': '#bf7fff'
+                }
+            )
+            fig_ltv.update_layout(yaxis=dict(autorange="reversed"))
+            st.plotly_chart(fig_ltv, use_container_width=True)
+        
+        with col2:
+            # Customer lifetime value distribution by behavior
+            ltv_by_behavior = lifetime_data.groupby('customer_order_behavior').agg({
+                'customer_lifetime_value': ['mean', 'median', 'max'],
+                'customer_total_orders': 'mean',
+                'avg_satisfaction': 'mean'
+            }).round(2)
+            
+            ltv_by_behavior.columns = ['Avg LTV', 'Median LTV', 'Max LTV', 'Avg Orders', 'Avg Satisfaction']
+            ltv_by_behavior.index = ltv_by_behavior.index.str.replace('_', ' ').str.title()
+            
+            st.markdown("**Lifetime Value by Customer Behavior**")
+            st.dataframe(ltv_by_behavior, use_container_width=True)
     
     # Detailed Data Tables
     st.subheader("📋 Detailed Analysis Tables")

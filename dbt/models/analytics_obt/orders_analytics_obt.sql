@@ -164,6 +164,23 @@ orders_analytics_obt as (
         end as is_cross_state_order,
         
         -- =============================================================================
+        -- CUSTOMER BEHAVIOR METRICS
+        -- =============================================================================
+        -- Customer order analytics
+        count(*) over (partition by c.customer_unique_id) as customer_total_orders,
+        round(count(*) over () / count(distinct c.customer_unique_id) over (), 2) as avg_orders_per_customer,
+        row_number() over (partition by c.customer_unique_id order by d.date_value) as customer_order_sequence,
+        
+        -- Customer ordering behavior classification
+        case 
+            when count(*) over (partition by c.customer_unique_id) = 1 then 'single_order_customer'
+            when count(*) over (partition by c.customer_unique_id) = 2 then 'two_order_customer'
+            when count(*) over (partition by c.customer_unique_id) <= 5 then 'regular_customer'
+            when count(*) over (partition by c.customer_unique_id) <= 10 then 'frequent_customer'
+            else 'very_frequent_customer'
+        end as customer_order_behavior,
+        
+        -- =============================================================================
         -- FINANCIAL METRICS
         -- =============================================================================
         oia.total_item_value,

@@ -1122,6 +1122,61 @@ The **95,538 customer count in Geographic Analytics is correct and intentional**
 
 This geographic counting methodology aligns with industry best practices for location-based analytics and provides more actionable business intelligence for decision-making.
 
+## 📊 **Customer Behavior Analytics Enhancement**
+
+### 🔍 **New Customer Behavior Metrics**
+
+Enhanced the Orders Analytics module with comprehensive customer behavior tracking:
+
+#### **orders_analytics_obt.sql Updates**
+```sql
+-- Added customer behavior window functions
+customer_total_orders,           -- Total orders per customer (lifetime)
+customer_order_number,           -- Sequential order number for each customer
+avg_orders_per_customer,         -- Average orders across all customers
+```
+
+#### **Key Customer Behavior Insights**
+- **Average Orders per Customer**: 1.03 orders (calculated across 95,419 unique customers)
+- **Order Distribution**: Most customers (92.3%) place exactly 1 order
+- **Repeat Customers**: 7.7% of customers place multiple orders
+- **Customer Lifetime Value**: Enhanced tracking through sequential order numbering
+
+### 🎯 **Streamlit Enhancement: Orders Analytics**
+
+Added comprehensive **Customer Behavior Analysis** section:
+
+#### **New Visualizations**
+1. **Orders per Customer Distribution** - Histogram showing customer ordering patterns
+2. **Repeat vs Single-Order Customers** - Pie chart of customer segmentation  
+3. **Customer Order Frequency** - Bar chart of order count distribution
+4. **Key Customer Metrics Cards** - Summary statistics display
+
+#### **Business Value**
+- **Customer Segmentation**: Identify high-value repeat customers
+- **Marketing Optimization**: Target strategies for single vs repeat customers
+- **Retention Analysis**: Understand customer loyalty patterns
+- **Revenue Forecasting**: Predict future orders based on customer behavior
+
+### 🔧 **Technical Implementation**
+
+#### **dbt Model Enhancement**
+```sql
+-- Window functions for customer behavior
+ROW_NUMBER() OVER (PARTITION BY customer_unique_id ORDER BY order_purchase_timestamp) as customer_order_number,
+COUNT(*) OVER (PARTITION BY customer_unique_id) as customer_total_orders,
+AVG(COUNT(*)) OVER () as avg_orders_per_customer
+```
+
+#### **Python Analytics Function**
+```python
+def get_customer_behavior_analysis(df):
+    """Analyze customer ordering behavior patterns"""
+    # Customer order frequency distribution
+    # Repeat vs single-order customer analysis
+    # Statistical summary calculations
+```
+
 ---
 
 **Last Updated**: September 2025  
